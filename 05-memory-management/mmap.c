@@ -26,7 +26,7 @@ int main(void)
 		err(EXIT_FAILURE, "mmap() failed");
 
 	puts("");
-	printf("*** succeeded to allocate memory: address = 0x%p; size = 0x%x ***\n",
+	printf("*** succeeded to allocate memory: address = %p; size = 0x%x ***\n",
 		new_memory, ALLOC_SIZE);
 	puts("");
 	

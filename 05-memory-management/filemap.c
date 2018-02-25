@@ -39,7 +39,7 @@ int main(void)
 	}
 
 	puts("");
-	printf("*** succeeded to map file: address = 0x%p; size = 0x%x ***\n",
+	printf("*** succeeded to map file: address = %p; size = 0x%x ***\n",
 		file_contents, ALLOC_SIZE);
 
 	puts("");
