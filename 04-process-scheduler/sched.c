@@ -106,6 +106,7 @@ int main(int argc, char *argv[])
 	puts("estimating workload which takes just one milisecond");
         unsigned long nloop_per_resol = loops_per_msec() * resol;
 	puts("end estimation");
+	fflush(stdout);
 
         pids = malloc(nproc * sizeof(pid_t));
         if (pids == NULL) {
