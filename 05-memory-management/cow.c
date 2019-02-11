@@ -11,7 +11,6 @@
 #define PAGE_SIZE	4096
 #define COMMAND_SIZE	4096
 
-static char *p;
 static char command[COMMAND_SIZE];
 
 static void child_fn(char *p) {
@@ -48,7 +47,7 @@ static void parent_fn(void) {
 
 int main(void)
 {
-	char *buf;
+	char *p;
 	p = malloc(BUFFER_SIZE);
 	if (p == NULL)
 		err(EXIT_FAILURE, "malloc() failed");
