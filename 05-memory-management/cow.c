@@ -11,7 +11,6 @@
 #define PAGE_SIZE	4096
 #define COMMAND_SIZE	4096
 
-static char *p;
 static char command[COMMAND_SIZE];
 
 static void child_fn(char *p) {
@@ -19,7 +18,7 @@ static void child_fn(char *p) {
 	fflush(stdout);
 	snprintf(command, COMMAND_SIZE,
 		 "ps -o pid,comm,vsz,rss,min_flt,maj_flt | grep '^ *%d'",
-		 getpid());	
+		 getpid());
 	system(command);
 	printf("*** free memory info before memory access ***:\n");
 	fflush(stdout);
@@ -42,13 +41,13 @@ static void child_fn(char *p) {
 
 static void parent_fn(void) {
 	wait(NULL);
-	
+
 	exit(EXIT_SUCCESS);
 }
 
 int main(void)
 {
-	char *buf;
+	char *p;
 	p = malloc(BUFFER_SIZE);
 	if (p == NULL)
 		err(EXIT_FAILURE, "malloc() failed");
