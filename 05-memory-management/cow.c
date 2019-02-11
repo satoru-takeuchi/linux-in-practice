@@ -18,7 +18,7 @@ static void child_fn(char *p) {
 	fflush(stdout);
 	snprintf(command, COMMAND_SIZE,
 		 "ps -o pid,comm,vsz,rss,min_flt,maj_flt | grep '^ *%d'",
-		 getpid());	
+		 getpid());
 	system(command);
 	printf("*** free memory info before memory access ***:\n");
 	fflush(stdout);
@@ -41,7 +41,7 @@ static void child_fn(char *p) {
 
 static void parent_fn(void) {
 	wait(NULL);
-	
+
 	exit(EXIT_SUCCESS);
 }
 
