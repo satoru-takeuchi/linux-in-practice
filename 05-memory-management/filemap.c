@@ -48,7 +48,7 @@ int main(void)
 	system(command);
 
 	puts("");
-	printf("*** file contens before overwrite mapped region: %s", file_contents);
+	printf("*** file contents before overwrite mapped region: %s", file_contents);
 
 	// overwrite mapped region
 	memcpy(file_contents, overwrite_data, strlen(overwrite_data));
