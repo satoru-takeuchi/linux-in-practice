@@ -12,6 +12,7 @@
 #define NSECS_PER_SEC 1000000000UL
 
 static unsigned long nloop_per_resol;
+static struct timespec start;
 
 static inline long diff_nsec(struct timespec before, struct timespec after)
 {
@@ -42,7 +43,7 @@ static inline void load(void)
                 ;
 }
 
-static void child_fn(int id, struct timespec *buf, int nrecord, struct timespec start)
+static void child_fn(int id, struct timespec *buf, int nrecord)
 {
         int i;
         for (i = 0; i < nrecord; i++) {
@@ -107,7 +108,6 @@ int main(int argc, char *argv[])
         if (pids == NULL)
                 err(EXIT_FAILURE, "failed to allocate pid table");
 
-        struct timespec start;
         clock_gettime(CLOCK_MONOTONIC, &start);
 
 	ret = EXIT_SUCCESS;
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
                         break;
                 } else if (pids[i] == 0) {
                         // children
-                        child_fn(i, logbuf, nrecord, start);
+                        child_fn(i, logbuf, nrecord);
                         /* shouldn't reach here */
 			abort();
                 }
