@@ -11,6 +11,8 @@
 #define NSECS_PER_MSEC 1000000UL
 #define NSECS_PER_SEC 1000000000UL
 
+static unsigned long nloop_per_resol;
+
 static inline long diff_nsec(struct timespec before, struct timespec after)
 {
         return ((after.tv_sec * NSECS_PER_SEC + after.tv_nsec)
@@ -18,7 +20,7 @@ static inline long diff_nsec(struct timespec before, struct timespec after)
 	
 }
 
-static unsigned long loops_per_msec()
+static unsigned long estimate_loops_per_msec()
 {
         struct timespec before, after;
         clock_gettime(CLOCK_MONOTONIC, &before);
@@ -33,20 +35,20 @@ static unsigned long loops_per_msec()
         return  NLOOP_FOR_ESTIMATION * NSECS_PER_MSEC / diff_nsec(before, after);
 }
  
-static inline void load(unsigned long nloop)
+static inline void load(void)
 {
         unsigned long i;
-        for (i = 0; i < nloop; i++)
+        for (i = 0; i < nloop_per_resol; i++)
                 ;
 }
 
-static void child_fn(int id, struct timespec *buf, int nrecord, unsigned long nloop_per_resol, struct timespec start)
+static void child_fn(int id, struct timespec *buf, int nrecord, struct timespec start)
 {
         int i;
         for (i = 0; i < nrecord; i++) {
                 struct timespec ts;
 
-                load(nloop_per_resol);
+                load();
                 clock_gettime(CLOCK_MONOTONIC, &ts);
                 buf[i] = ts;
         }
@@ -56,13 +58,6 @@ static void child_fn(int id, struct timespec *buf, int nrecord, unsigned long nl
         exit(EXIT_SUCCESS);
 }
  
-static void parent_fn(int nproc)
-{
-        int i;
-        for (i = 0; i < nproc; i++)
-                wait(NULL);
-}
-
 static pid_t *pids;
 
 int main(int argc, char *argv[])
@@ -89,7 +84,7 @@ int main(int argc, char *argv[])
         }
 
         if (resol < 1) {
-                fprintf(stderr, "<resol>(%d) should be >= １\n", resol);
+                fprintf(stderr, "<resol>(%d) should be >= 1\n", resol);
                 exit(EXIT_FAILURE);
         }
 
@@ -101,53 +96,41 @@ int main(int argc, char *argv[])
 
         struct timespec *logbuf = malloc(nrecord * sizeof(struct timespec));
 	if (!logbuf)
-		err(EXIT_FAILURE, "malloc(logbuf) failed");
+		err(EXIT_FAILURE, "failed to allocate log buffer");
 
-	puts("estimating workload which takes just one milisecond");
-        unsigned long nloop_per_resol = loops_per_msec() * resol;
+	puts("estimating the workload which takes just one milli-second...");
+        nloop_per_resol = estimate_loops_per_msec() * resol;
 	puts("end estimation");
 	fflush(stdout);
 
         pids = malloc(nproc * sizeof(pid_t));
-        if (pids == NULL) {
-                warn("malloc(pids) failed");
-                goto free_logbuf;
-        }
+        if (pids == NULL)
+                err(EXIT_FAILURE, "failed to allocate pid table");
 
         struct timespec start;
         clock_gettime(CLOCK_MONOTONIC, &start);
 
+	ret = EXIT_SUCCESS;
         int i, ncreated;
         for (i = 0, ncreated = 0; i < nproc; i++, ncreated++) {
                 pids[i] = fork();
                 if (pids[i] < 0) {
-                        goto wait_children;
+			int j;
+                	for (j = 0; j < ncreated; j++)
+                        	kill(pids[j], SIGKILL);
+			ret = EXIT_FAILURE;
+                        break;
                 } else if (pids[i] == 0) {
                         // children
-
-                        child_fn(i, logbuf, nrecord, nloop_per_resol, start);
+                        child_fn(i, logbuf, nrecord, start);
                         /* shouldn't reach here */
+			abort();
                 }
         }
-        ret = EXIT_SUCCESS;
-
         // parent
-
-wait_children:
-        if (ret == EXIT_FAILURE)
-                for (i = 0; i < ncreated; i++)
-                        if (kill(pids[i], SIGINT) < 0)
-                                warn("kill(%d) failed", pids[i]);
-
         for (i = 0; i < ncreated; i++)
                 if (wait(NULL) < 0)
                         warn("wait() failed.");
-
-free_pids:
-        free(pids);
-
-free_logbuf:
-        free(logbuf);
 
         exit(ret);
 }
