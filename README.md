@@ -23,9 +23,11 @@ binutils, build-essential, golang, python3-matplotlib, python3-pil, fonts-takao
 
 - [sched](04-process-scheduler/misc/sched): [sched.c](04-process-scheduler/sched.c)に対応するPythonプログラム。結果をグラフ化にして"sched-<並列度>.jpg"に保存。
 
-- [sched-1.jpg](04-process-scheduler/misc/sched-1.jpg): 1CPU上で1並列でschedプログラムを動かした結果を示すグラフ
-- [sched-2.jpg](04-process-scheduler/misc/sched-2.jpg): 1CPU上で2並列でschedプログラムを動かした結果を示すグラフ
-- [sched-3.jpg](04-process-scheduler/misc/sched-3.jpg): 1CPU上で3並列でschedプログラムを動かした結果を示すグラフ
+以下、1CPU上でschedプログラムを動かした結果を示すグラフです。順番に1並列、2並列、3並列のものです。
+
+![sched-1.jpg](04-process-scheduler/misc/sched-1.jpg)
+![sched-2.jpg](04-process-scheduler/misc/sched-2.jpg)
+![sched-3.jpg](04-process-scheduler/misc/sched-3.jpg)
 
 ## 5章
 
@@ -39,4 +41,6 @@ binutils, build-essential, golang, python3-matplotlib, python3-pil, fonts-takao
 
 - [cache.go](06-storage-hierarchy/misc/cache.go): [cache.c](06-storage-hierarchy/cache.c)に対応するGoプログラム。`go build cache.go`でビルドできる。
 
-- [cache.jpg](06-storage-hierarchy/misc/cache.jpg): cacheプログラムを1CPUコアあたりのL1d,L2,L3キャッシュ容量がそれぞれ32KB,512KB,4MBのCPU上で動かした結果を示すグラフ
+以下、cacheプログラムを1CPUコアあたりのL1d,L2,L3キャッシュ容量がそれぞれ32KB,512KB,4MBのCPU上で動かした結果を示すグラフです。
+
+![cache.jpg](06-storage-hierarchy/misc/cache.jpg)
