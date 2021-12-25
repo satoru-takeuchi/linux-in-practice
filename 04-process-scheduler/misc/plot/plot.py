@@ -25,6 +25,10 @@ def plot_sched(concurrency):
     ax.set_xlim(0)
     ax.set_ylabel("進捗[%]")
     ax.set_ylim([0,100])
+    legend = []
+    for i in range(concurrency):
+        legend.append("負荷処理"+str(i))
+    ax.legend(legend)
 
     # Ubuntu 20.04のmatplotlibのバグを回避するために一旦pngで保存してからjpgに変換している
     # https://bugs.launchpad.net/ubuntu/+source/matplotlib/+bug/1897283?comments=all
